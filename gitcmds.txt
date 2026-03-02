@@ -5,5 +5,12 @@ git pull origin main
 Step 2: The "Split" (Create a feature branch)
 Now, create a new branch. Let's say you're adding a reporting feature using a Postgres Window Function.
 git checkout -b feature/reporting-window-func
+
 Step 3: The "Work" (Commit as usual)
 Now you are in your safe "timeline." Edit your .cs files, write your raw lowercase SQL, and commit.
+git add .
+git commit -m "add row_number() window function for user rankings"
+
+Step 4: The "Sync" (Push to GitHub)
+Even though it's a local branch, you should push it to GitHub so it's backed up and others (or your future self) can see it.
+git push -u origin feature/reporting-window-func
