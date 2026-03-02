@@ -1,0 +1,41 @@
+# === Build Artifacts ===
+Debug/
+release/
+x64/
+x86/
+bin/
+obj/
+
+# === .NET 10 / MSBuild Specifics ===
+.library-cache/
+.pdm/
+*.pubxml
+*.user
+*.userosscache
+*.sln.docstates
+
+# === IDE Specific (Visual Studio / VS Code / Rider) ===
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.openedderivation
+
+# === NuGet Packages ===
+*.nupkg
+**/packages/*
+!**/packages/build/
+
+# === Environment & Secrets ===
+# Crucial for Npgsql connection strings
+.env
+.env.*
+appsettings.Development.json
+appsettings.Local.json
+
+# === OS Generated Files ===
+.DS_Store
+Thumbs.db

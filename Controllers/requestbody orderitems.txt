@@ -1,0 +1,19 @@
+{
+  "items": [
+    {
+      "product_id": 901,
+      "quantity": 2,
+      "unit_price": 9.99
+    },
+    {
+      "product_id": 902,
+      "quantity": 1,
+      "unit_price": 14.50
+    },
+    {
+      "product_id": 903,
+      "quantity": 5,
+      "unit_price": 3.25
+    }
+  ]
+}
