@@ -34,7 +34,7 @@ namespace OrdersApi.Controllers
         [ProducesResponseType(typeof(string), 200)]
         public async Task<IActionResult> Get([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string? format = null)
         {
-            _logger.LogCritical("\n IN MY CONTROLLERGETALLxxxxxxxxx");
+            //_logger.LogCritical("\n IN MY CONTROLLERGETALLxxxxxxxxx");
             // Get total count
             var countSql = "SELECT COUNT(*) FROM customers";
             await using var countCmd = _db.CreateCommand(countSql);
