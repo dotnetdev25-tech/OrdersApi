@@ -1,39 +1,42 @@
+using Microsoft.Extensions.Logging;
 using Npgsql;
-using System.Text;
-using QuestPDF.Fluent;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 using OrdersApi.Dtos;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add console logging
+// Configure logging
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
+
+// Configure API services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// set up npgsqldatasource which pools connections so this will be passed to controllers
-builder.Services.AddSingleton<NpgsqlDataSource>(sp => { var cs = builder.Configuration.GetConnectionString("Default"); return new NpgsqlDataSourceBuilder(cs).Build(); });
+// Configure database connection pooling
+var connectionString = builder.Configuration.GetConnectionString("Default");
+builder.Services.AddSingleton<NpgsqlDataSource>(
+    _ => new NpgsqlDataSourceBuilder(connectionString).Build());
 
-// Set the license to Community
-QuestPDF.Settings.License = LicenseType.Community;
-// 1. Define the policy
-builder.Services.AddCors(options => {
-    options.AddPolicy("BlazorPolicy", policy => 
-        policy.WithOrigins("https://localhost:7000") // Your Blazor URL
+// Configure CORS for Blazor frontend
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("BlazorPolicy", policy =>
+        policy.WithOrigins("https://localhost:7000")
               .AllowAnyMethod()
               .AllowAnyHeader());
 });
 
+// Configure QuestPDF license
+QuestPDF.Settings.License = LicenseType.Community;
 
 var app = builder.Build();
-// 2. Use it
+
+// Configure middleware
 app.UseCors("BlazorPolicy");
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -41,6 +44,5 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
-
 
 app.Run();
