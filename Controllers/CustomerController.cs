@@ -132,7 +132,7 @@ namespace OrdersApi.Controllers
         public async Task<IActionResult> Create([FromBody] CreateCustomerDto dto)
         {
             _logger.LogInformation("\n!!!!!INHTTP POST ");
-            var connectionString = _configuration.GetConnectionString("DefaultConnection");
+            var connectionString = _configuration.GetConnectionString("Default");
 
             await using var conn = new NpgsqlConnection(connectionString);
             await conn.OpenAsync();
@@ -179,7 +179,7 @@ namespace OrdersApi.Controllers
         public async Task<IActionResult> Update(int id, [FromBody] UpdateCustomerDto dto)
         {
             _logger.LogInformation("\n!!!!!IN HTTP PUT ID ");
-            var connectionString = _configuration.GetConnectionString("DefaultConnection");
+            var connectionString = _configuration.GetConnectionString("Default");
             _logger.LogInformation("!!!!!put commend conn string:" + connectionString);
 
             await using var conn = new NpgsqlConnection(connectionString);
@@ -396,7 +396,7 @@ namespace OrdersApi.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             _logger.LogInformation("\n!!!!!INHTTP DELETE ID ");
-            var connectionString = _configuration.GetConnectionString("DefaultConnection");
+            var connectionString = _configuration.GetConnectionString("Default");
 
             await using var conn = new NpgsqlConnection(connectionString);
             await conn.OpenAsync();

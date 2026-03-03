@@ -213,7 +213,7 @@ from daily_sales,customers where customer_id = customers.id order by customer_id
         [ProducesResponseType(400)]
         public async Task<IActionResult> Create([FromBody] CreateOrderItemDto dto)
         {
-            var connectionString = _configuration.GetConnectionString("DefaultConnection");
+            var connectionString = _configuration.GetConnectionString("Default");
 
             await using var conn = new NpgsqlConnection(connectionString);
             await conn.OpenAsync();
@@ -261,7 +261,7 @@ public async Task<IActionResult> UpsertOrderItems(
     if (dto?.Items == null || dto.Items.Count == 0)
         return BadRequest("Items collection cannot be empty.");
 
-var connectionString = _configuration.GetConnectionString("DefaultConnection");
+var connectionString = _configuration.GetConnectionString("Default");
     await using var conn = new NpgsqlConnection(connectionString);
     await conn.OpenAsync();
 
@@ -325,7 +325,7 @@ var connectionString = _configuration.GetConnectionString("DefaultConnection");
         [ProducesResponseType(400)]
         public async Task<IActionResult> Create([FromBody] CreateOrderDto dto)
         {
-            var connectionString = _configuration.GetConnectionString("DefaultConnection");
+            var connectionString = _configuration.GetConnectionString("Default");
 
             await using var conn = new NpgsqlConnection(connectionString);
             await conn.OpenAsync();
@@ -375,7 +375,7 @@ var connectionString = _configuration.GetConnectionString("DefaultConnection");
         [ProducesResponseType(404)]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateCustomerDto dto)
         {
-            var connectionString = _configuration.GetConnectionString("DefaultConnection");
+            var connectionString = _configuration.GetConnectionString("Default");
             _logger.LogInformation("!!!!!put commend conn string:" + connectionString);
 
             await using var conn = new NpgsqlConnection(connectionString);
@@ -586,7 +586,7 @@ CustomerResponse? customer = null;
         [ProducesResponseType(404)]
         public async Task<IActionResult> Delete(int id)
         {
-            var connectionString = _configuration.GetConnectionString("DefaultConnection");
+            var connectionString = _configuration.GetConnectionString("Default");
 
             await using var conn = new NpgsqlConnection(connectionString);
             await conn.OpenAsync();
