@@ -1,0 +1,4 @@
+=========
+aspirefy
+======
+dotnet workload install aspire

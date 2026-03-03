@@ -438,11 +438,7 @@ var connectionString = _configuration.GetConnectionString("DefaultConnection");
             _logger.LogInformation("GET1x SQL: {Sql}", cmd.CommandText);
 
             await using var reader = await cmd.ExecuteReaderAsync();
-            var rec = new Jjtrec
-{
-    id = 1,
-    date = DateTime.UtcNow
-};
+        
 CustomerResponse? customer = null;
             var orders = new Dictionary<int, OrderResponse>();
 
