@@ -1,4 +1,4 @@
-using MyAwesomeApp.Shared;
+//using MyAwesomeApp.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using OrdersApi.Dtos;
@@ -34,7 +34,7 @@ namespace OrdersApi.Controllers
         [ProducesResponseType(typeof(string), 200)]
         public async Task<IActionResult> Get([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string? format = null)
         {
-            _logger.LogCritical("\n IN MY CONTROLLERGETALLxxxxxxxxx");
+            _logger.LogCritical("\n nano IN MY CONTROLLERGETALLxxxxxxxxx");
             // Get total count
             var countSql = "SELECT COUNT(*) FROM customers";
             await using var countCmd = _db.CreateCommand(countSql);
@@ -53,13 +53,13 @@ namespace OrdersApi.Controllers
             cmd.Parameters.AddWithValue("@offset", offset);
             cmd.LogParameters(_logger);
             _logger.LogInformation("GET ALL SQL: {Sql}", cmd.CommandText);
-            var  customershared = new Customer
+            var  customershared = new CustomerDto
             {
-                id=99,
-                last_name = "last",
-                shared = "nothin",
-            };
-            _logger.LogCritical("\n SHAREDCUSTOMER OBJECT:"+customershared.shared);
+                customerid=99,
+                customerName = "last",
+            }
+             ;
+           // _logger.LogCritical("\n SHAREDCUSTOMER OBJECT:"+customershared.shared);
             var customers = new List<CustomerDto>();
             await using var reader = await cmd.ExecuteReaderAsync();
 

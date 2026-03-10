@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrdersApi", "OrdersApi.cspr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyAwesomeApp.Client", "..\MyAwesomeApp.Client\MyAwesomeApp.Client.csproj", "{97F0BD67-C3DF-4C50-9B51-219F44714F46}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyAwesomeApp.Shared", "..\MyAwesomeApp.Shared\MyAwesomeApp.Shared.csproj", "{B4DCDF91-1A8B-47B2-84C1-DC22FB8779FB}"
+
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

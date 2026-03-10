@@ -74,6 +74,11 @@ VALUES ('credit_card'), ('ach'), ('cash'), ('check'), ('paypal');
 
 INSERT INTO fulfillment_method (method_name)
 VALUES ('pickup'), ('delivery'), ('ship');
+ALTER TABLE orders
+    ADD CONSTRAINT fk_order_status
+        FOREIGN KEY (order_status_id)
+        REFERENCES order_status(order_status_id);
+
 
 
 
