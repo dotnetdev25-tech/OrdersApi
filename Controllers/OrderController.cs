@@ -130,6 +130,7 @@ from daily_sales order by id;    ";
         [ProducesResponseType(typeof(string), 200)]
         public async Task<IActionResult> Get([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string? format = null)
         {
+            _logger.LogInformation("gGET orders");
             // Get total count
             var countSql = "SELECT COUNT(*) FROM orders";
              using var countCmd = _db.CreateCommand(countSql);

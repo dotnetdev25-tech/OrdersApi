@@ -5,7 +5,7 @@ VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrdersApi", "OrdersApi.csproj", "{EA4B5DE2-9A10-6F25-D941-ACA5AB610D55}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyAwesomeApp.Client", "..\MyAwesomeApp.Client\MyAwesomeApp.Client.csproj", "{97F0BD67-C3DF-4C50-9B51-219F44714F46}"
+
 EndProject
 
 EndProject

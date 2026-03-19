@@ -16,6 +16,7 @@
     <PackageReference Include="Npgsql.DependencyInjection" Version="10.0.1" />
     <PackageReference Include="QuestPDF" Version="2025.12.4" />
     <PackageReference Include="RazorLight" Version="2.3.1" />
+    <PackageReference Include="Serilog" Version="4.3.1" />
     <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.0" />

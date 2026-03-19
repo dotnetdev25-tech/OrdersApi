@@ -5,6 +5,7 @@ x64/
 x86/
 bin/
 obj/
+logs/
 
 # === .NET 10 / MSBuild Specifics ===
 .library-cache/

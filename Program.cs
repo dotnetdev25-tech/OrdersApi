@@ -1,14 +1,21 @@
 using Microsoft.Extensions.Logging;
 using Npgsql;
 using QuestPDF.Infrastructure;
+using Microsoft.Extensions.Logging;
+using System.IO;
+using Serilog;
+
 
 using OrdersApi.Dtos;
 
 var builder = WebApplication.CreateBuilder(args);
+// make sure the directory exists
+Directory.CreateDirectory("logs");
 
 // Configure logging
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
+//builder.Logging.ClearProviders();
+//builder.Logging.AddConsole();
+//builder.Logging.Addfil
 
 // Configure API services
 builder.Services.AddControllers();
@@ -32,6 +39,20 @@ builder.Services.AddCors(options =>
 // Configure QuestPDF license
 QuestPDF.Settings.License = LicenseType.Community;
 
+// Configure Serilog *before* building the app
+// Configure Serilog before building the app
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.File(
+        path: "logs/log-.txt",          // log files in ./logs
+        rollingInterval: RollingInterval.Day,
+        retainedFileCountLimit: 7,      // keep last 7 days
+        shared: true                    // allow shared access, no buffered writes
+    )
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
 var app = builder.Build();
 
 // Configure middleware
@@ -44,5 +65,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+var logger = LoggerFactory.Create(cfg =>
+{
+    cfg.AddConsole();
+}).CreateLogger("startup");
+logger.LogInformation("{Timestamp} serverstarted", DateTime.Now);
 
 app.Run();
