@@ -17,21 +17,23 @@ namespace OrdersApi.Controllers
 
     public class OrderController : ControllerBase
     {
-        
+        private readonly OrdersRepository _repo;
         private readonly ILogger<OrderController> _logger;
         private readonly IConfiguration _configuration;
         private readonly NpgsqlDataSource _db;
       
-        public OrderController(ILogger<OrderController> logger, NpgsqlDataSource db, IConfiguration config)
+        public OrderController(ILogger<OrderController> logger, NpgsqlDataSource db, IConfiguration config,OrdersRepository repo)
         {
             _logger = logger;
             _configuration = config;
             _db = db;
+             _repo = repo;
         }
         ///////////////////
  [HttpGet("orderitems")]
 public async Task<IActionResult> GetOrderItems()
 {
+    
     var sql = @"
 with orderitems as (
  select
@@ -172,6 +174,10 @@ select
 from daily_sales,customers where customer_id = customers.id order by customer_id;    ";
 
             using var cmd = _db.CreateCommand(sql);
+    // implemt
+   // await using var cmd = _db.CreateCommand(sql)
+    //.WithParam("id", id);
+
            // cmd.Parameters.AddWithValue("@pageSize", pageSize);
            // cmd.Parameters.AddWithValue("@offset", offset);
             cmd.LogParameters(_logger);

@@ -27,6 +27,14 @@ var connectionString = builder.Configuration.GetConnectionString("Default");
 builder.Services.AddSingleton<NpgsqlDataSource>(
     _ => new NpgsqlDataSourceBuilder(connectionString).Build());
 
+#pragma warning disable CS8604 // Possible null reference argument.
+builder.Services.AddSingleton(new PgDb(connectionString));
+#pragma warning restore CS8604 // Possible null reference argument.
+builder.Services.AddScoped<OrdersRepository>();
+//builder.Services.AddScoped<CustomersRepository>();
+//builder.Services.AddScoped<OrderItemsRepository>();
+
+
 // Configure CORS for Blazor frontend
 builder.Services.AddCors(options =>
 {
@@ -69,6 +77,6 @@ var logger = LoggerFactory.Create(cfg =>
 {
     cfg.AddConsole();
 }).CreateLogger("startup");
-logger.LogInformation("{Timestamp} serverstarted", DateTime.Now);
+logger.LogCritical("{Timestamp} serverstarted", DateTime.Now);
 
 app.Run();

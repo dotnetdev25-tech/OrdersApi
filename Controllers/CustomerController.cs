@@ -1,4 +1,3 @@
-//using MyAwesomeApp.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using OrdersApi.Dtos;

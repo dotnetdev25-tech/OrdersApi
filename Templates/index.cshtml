@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }}</title>
+    <style>
+        .report-params {
+            display: none; /* Initially hide parameter fields */
+            margin-top: 10px;
+        }
+        .report-params label {
+            margin-right: 5px;
+        }
+    </style>
+    <style>
+        /* Basic styling for better appearance */
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        label { display: block; margin-bottom: 16px; font-weight: bold; }
+        input[type="date"] { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 10px 15px; background-color: #e0e0e0; color: #333; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        /* Styling for invalid input (browser default) */
+        input:invalid { border-color: red; }
+    </style>
+    <script>
+        async function generateReport(event) {
+        
+            event.preventDefault();
+
+            const form = event.target;
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch(form.action, {
+                    method: form.method,
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const reportHtml = await response.text();
+                document.getElementById('report-container').innerHTML = reportHtml;
+                document.title =  document.getElementById('report_type').value
+               console.error("!!!!!!!!!GENERATE REPORT FORTYPE:"+ document.title);
+
+            } catch (error) {
+                console.error("Error generating report:", error);
+                document.getElementById('report-container').innerHTML = '<p>Error generating report. Please try again.</p>';
+            }
+        }
+
+        function showReportParameters() {
+            const reportType = document.getElementById('report_type').value;
+            const dateParams = document.getElementById('date-params');
+
+            if (reportType === 'callsbyserver'|| reportType === 'allcalls') { // Example: 'sales_by_date' requires dates
+                dateParams.style.display = 'block';
+            } else {
+                dateParams.style.display = 'none';
+            }
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('report_type').addEventListener('change', showReportParameters);
+        });
+    </script>
+</head>
+<body>
+    <form class="form-group" action="/reports" method="post" onsubmit="generateReport(event)">
+            <labelEmail" class="col-sm-2 col-form-label" for="report_type">Report Type:</label>
+            <select id="report_type" name="report_type" onchange="showReportParameters()">
+                <option value="summaryreport">Summary Report( sanity check)</option>
+                <option value="callsbyserver">calls by server</option>
+                <option value="callsbydnis">calls by DNIS</option>
+                 <option value="callsbyhour">calls by HOUR</option>
+                 <option value="callsbydate">calls by date</option>
+                <option value="allcalls">ALL calls </option>
+                <option value="trendingreport">trending report </option>
+                <option value="serveragg">server agg report</option>
+                <option value="concurrentusage">concurrent usage report</option>
+                <option value="kpis">kpi Report</option>
+            </select>
+            <div>
+            <label Email" class="col-sm-2 col-form-label"for="date_range">date range:</label>
+            <select id="date_range" name="date_range" onchange="showReportParameters()">
+                <option value="today">today</option>
+                <option value="alltime">all time</option>
+                <option value="yesterday">yesterday</option>
+                <option value="this_month">this month</option>
+                <option value="last_7_days">last 7 days</option>
+            </select>
+            </div>
+        <div id="date-params" class="report-params">
+            <label for="start_date">Start Date:</label>
+            <input type="date" id="start_date" name="start_date" value="2023-10-21">
+            <label for="serverid">serverid:</label>
+            <input type="number" id="serverid" name="serverid">
+            <label for="end_date">End Date:</label>
+            <input type="date" id="end_date" name="end_date">
+        </div>
+
+        <button type="submit">Generate Report</button>
+    </form>
+<div id="report-container" class="border rounded shadow-sm p-3 mb-5 bg-white"></div>
+</div>
+</body>
+</html>
