@@ -6,6 +6,7 @@ public sealed class PgDb
     public PgDb(string connectionString)
     {
         _dataSource = NpgsqlDataSource.Create(connectionString);
+        
     }
 
     public NpgsqlCommand CreateCommand(string sql)
