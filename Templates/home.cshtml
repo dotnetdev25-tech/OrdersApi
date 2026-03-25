@@ -91,7 +91,12 @@ input:disabled {
 </style>
   <script>
         async function generateReport(event) {
+            const name = "John";
+            const age = 30;
+            console.log(`Hello, my name is ${name} and I am ${age} years old.`);
             console.log("GENERATING REPORT - TEST");
+            const reportName = document.getElementById('report_type').value;
+            console.log("GENERATING REPORT - test2:");
             event.preventDefault();
 
             const form = event.target;
@@ -105,11 +110,12 @@ input:disabled {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
+                
 
                 const reportHtml = await response.text();
                 document.getElementById('report-container').innerHTML = reportHtml;
                 document.title = document.getElementById('report_type').value;
-                console.log("Report generated for type: " + document.title);
+                console.log("Report generated for typexxxx: " + document.title);
 
             } catch (error) {
                 console.error("Error generating report:", error);
@@ -117,10 +123,10 @@ input:disabled {
             }
         }
 
-        function showReportParametersx() {
+        function showReportParameters() {
             const reportType = document.getElementById('report_type').value;
             const dateParams = document.getElementById('date-params');
-             console.log("!!!!!!!!!!!showreportparms:"+reportType)
+            console.log("showreportparms:")
            // if (reportType === 'callsbyserver' || reportType === 'allcalls') {
            //     dateParams.classList.remove('d-none');
            // } else {
@@ -129,7 +135,7 @@ input:disabled {
         }
 
        document.addEventListener('DOMContentLoaded', () => {
-       //    document.getElementById('report_type').addEventListener('change', showReportParameters);
+           document.getElementById('report_type').addEventListener('change', showReportParameters);
        });
     </script>
   
@@ -141,7 +147,7 @@ input:disabled {
     <form class="form" onsubmit="generateReport(event)">
       <h1>form itself</h1>
         <label for="name">Name</label>
-        <input id="name" name="name" type="text">
+        <input id="name" name="name" type="text" required>
         <label for="current-password">Password</label>
         <input type="password" id="current-password" name="current-password">
         <label for="email">Email</label>
