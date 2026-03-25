@@ -50,37 +50,17 @@ public class HomeController : ControllerBase
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ page_title }}</title>
-    <style>
-        .report-params {
-            display: none; /* Initially hide parameter fields */
-            margin-top: 10px;
-        }
-        .report-params label {
-            margin-right: 5px;
-        }
-    </style>
-    <style>
-        /* Basic styling for better appearance */
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        label { display: block; margin-bottom: 16px; font-weight: bold; }
-        input[type="date"] { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-        button { padding: 10px 15px; background-color: #e0e0e0; color: #333; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background-color: #0056b3; }
-        /* Styling for invalid input (browser default) */
-        input:invalid { border-color: red; }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script>
         async function generateReport(event) {
-         console.error("!!!!!!!!!1HERE!!!!!!!!");
+            console.log("Generating report...");
             event.preventDefault();
 
             const form = event.target;
-            const formData = new FormData(form);
 
             try {
                 const response = await fetch(form.action, {
                     method: form.method,
-                    body: formData
                 });
 
                 if (!response.ok) {
@@ -89,12 +69,12 @@ public class HomeController : ControllerBase
 
                 const reportHtml = await response.text();
                 document.getElementById('report-container').innerHTML = reportHtml;
-                document.title =  document.getElementById('report_type').value
-               console.error("!!!!!!!!!GENERATE REPORT FORTYPE:"+ document.title);
+                document.title = document.getElementById('report_type').value;
+                console.log("Report generated for type: " + document.title);
 
             } catch (error) {
                 console.error("Error generating report:", error);
-                document.getElementById('report-container').innerHTML = '<p>Error generating report. Please try again.</p>';
+                document.getElementById('report-container').innerHTML = '<p class="text-danger">Error generating report. Please try again.</p>';
             }
         }
 
@@ -102,62 +82,156 @@ public class HomeController : ControllerBase
             const reportType = document.getElementById('report_type').value;
             const dateParams = document.getElementById('date-params');
 
-            if (reportType === 'callsbyserver'|| reportType === 'allcalls') { // Example: 'sales_by_date' requires dates
-                dateParams.style.display = 'block';
+            if (reportType === 'callsbyserver' || reportType === 'allcalls') {
+                dateParams.classList.remove('d-none');
             } else {
-                dateParams.style.display = 'none';
+                dateParams.classList.add('d-none');
             }
         }
+
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('report_type').addEventListener('change', showReportParameters);
         });
     </script>
 </head>
-<body>
-    <form class="form-group" action="/home" method="get" onsubmit="generateReport(event)">
-            <labelEmail" class="col-sm-2 col-form-label" for="report_type">Report Type:</label>
-            <select id="report_type" name="report_type" onchange="showReportParameters()">
-                <option value="summaryreport">Summary Report( sanity check)</option>
-                <option value="callsbyserver">calls by server</option>
-                <option value="callsbydnis">calls by DNIS</option>
-                 <option value="callsbyhour">calls by HOUR</option>
-                 <option value="callsbydate">calls by date</option>
-                <option value="allcalls">ALL calls </option>
-                <option value="trendingreport">trending report </option>
-                <option value="serveragg">server agg report</option>
-                <option value="concurrentusage">concurrent usage report</option>
-                <option value="kpis">kpi Report</option>
-            </select>
-            <div>
-            <label Email" class="col-sm-2 col-form-label"for="date_range">date range:</label>
-            <select id="date_range" name="date_range" onchange="showReportParameters()">
-                <option value="today">today</option>
-                <option value="alltime">all time</option>
-                <option value="yesterday">yesterday</option>
-                <option value="this_month">this month</option>
-                <option value="last_7_days">last 7 days</option>
-            </select>
+<body class="container mt-4 d-flex justify-content-center">
+    <style>
+        .form-label { white-space: nowrap; }
+    </style>
+    <form action="/reports" method="get" onsubmit="generateReport(event)" class="w-100" style="max-width: 640px;">
+        <div class="card border rounded shadow-sm p-4 mb-4 bg-white">
+            <div class="row mb-3 align-items-center">
+                <label for="report_type" class="col-sm-4 col-form-label">Report Type:</label>
+                <div class="col-sm-8">
+                    <select id="report_type" name="report_type" class="form-select" onchange="showReportParameters()">
+                        <option value="summaryreport">Summary Report (sanity check)</option>
+                        <option value="callsbyserver">Calls by Server</option>
+                        <option value="callsbydnis">Calls by DNIS</option>
+                        <option value="callsbyhour">Calls by Hour</option>
+                        <option value="callsbydate">Calls by Date</option>
+                        <option value="allcalls">All Calls</option>
+                        <option value="trendingreport">Trending Report</option>
+                        <option value="serveragg">Server Agg Report</option>
+                        <option value="concurrentusage">Concurrent Usage Report</option>
+                        <option value="kpis">KPI Report</option>
+                    </select>
+                </div>
             </div>
-        <div id="date-params" class="report-params">
-            <label for="start_date">Start Date:</label>
-            <input type="date" id="start_date" name="start_date" value="2023-10-21">
-            <label for="serverid">serverid:</label>
-            <input type="number" id="serverid" name="serverid">
-            <label for="end_date">End Date:</label>
-            <input type="date" id="end_date" name="end_date">
+            <div class="row mb-3 align-items-center">
+                <label for="date_range" class="col-sm-4 col-form-label">Date Range:</label>
+                <div class="col-sm-8">
+                    <select id="date_range" name="date_range" class="form-select">
+                        <option value="today">Today</option>
+                        <option value="alltime">All Time</option>
+                        <option value="yesterday">Yesterday</option>
+                        <option value="this_month">This Month</option>
+                        <option value="last_7_days">Last 7 Days</option>
+                    </select>
+                </div>
+            </div>
+            <div id="date-params" class="d-none">
+                <div class="row mb-3 align-items-center">
+                    <label for="start_date" class="col-sm-4 col-form-label">Start Date:</label>
+                    <div class="col-sm-8">
+                        <input type="date" id="start_date" name="start_date" class="form-control" value="2023-10-21">
+                    </div>
+                </div>
+                <div class="row mb-3 align-items-center">
+                    <label for="serverid" class="col-sm-4 col-form-label">Server ID:</label>
+                    <div class="col-sm-8">
+                        <input type="number" id="serverid" name="serverid" class="form-control">
+                    </div>
+                </div>
+                <div class="row mb-3 align-items-center">
+                    <label for="end_date" class="col-sm-4 col-form-label">End Date:</label>
+                    <div class="col-sm-8">
+                        <input type="date" id="end_date" name="end_date" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col text-end">
+                    <button type="submit" class="btn btn-primary">Generate Report</button>
+                </div>
+            </div>
         </div>
-
-        <button type="submit">Generate Report</button>
     </form>
-<div id="report-container" class="border rounded shadow-sm p-3 mb-5 bg-white"></div>
-</div>
+    <div id="report-container" class="mt-4 card p-3 shadow-lg" style="max-height: 600px; overflow-y: auto; width: 100%; max-width: 640px;">
+    </div>
 </body>
 </html>
-""";   
+""";  
+    var testhtml = """
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Simple Layout</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: sans-serif;
+      }
+
+      .container {
+        width: 900px;
+        margin: 0 auto;
+        border: 1px solid #460202;
+      }
+
+      .header,
+      .footer {
+        background: #333;
+        color: white;
+        padding: 20px;
+      }
+
+      .content-area {
+        padding: 10px;
+      }
+
+      .main {
+        display: inline-block;
+        width: 65%;
+        vertical-align: top;
+        background: #f0f0f0;
+        padding: 10px;
+      }
+
+      .sidebar {
+        display: inline-block;
+        width: 30%;
+        vertical-align: top;
+        background: #e0e0ff;
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">Header</div>
+
+      <div class="content-area">
+        <div class="main">
+   <p>Main content1</p>
+        </div>
+        <div class="sidebar">
+          <p>sidebar content1</p>
+        </div>
+      </div>
+
+      <div class="footer">Footer</div>
+    </div>
+  </body>
+</html>
+"""; 
+var model = new { PageTitle = "Reports" };
+var htmlrazor = _razor.CompileRenderAsync("home.cshtml", model).Result;
+return Content(htmlrazor, "text/html");
    //  var htmlx =  _razor.CompileRenderAsync("CustomerSummary.cshtml", customer);
   //  return Content(text, "text/html");
       
-        return Content(html, "text/html");
+        return Content(text, "text/html");
    // }
 }
 }

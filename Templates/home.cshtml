@@ -1,0 +1,172 @@
+@model dynamic
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>@Model.PageTitle</title>
+
+<style>
+    body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    padding: 20px;
+    margin: 0; /* Clears the browser's default "extra" space */
+    line-height: 1.6; /* Adds a bit of vertical space between lines of text for readability */
+    color: #333; /* Sets a global dark gray for all text */
+}
+:root {
+    --primary-green: #064e3b; /* Define it here */
+    --standard-padding: 12px;
+}
+    .form-container {
+        background: #f3f4f6;
+        padding: 20px;
+        max-width: 400px;
+        margin: 0 auto;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+    }
+      .report-container {
+        background: #f3f4f6;
+        padding: 20px;
+        max-width: 400px;
+        margin: 0 auto;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+    }
+.form {
+        padding: 20px;
+        max-width: 400px;
+        margin: 0 auto;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 0px;
+        font-weight: bold;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 8px;
+       background: #f5f5f5;
+        margin-bottom: 15px;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+    }
+
+    button {
+    background-color: var(--primary-green); /* Use it here */
+    padding: var(--standard-padding);
+}
+
+    button:hover {
+        background: #0056b3;
+    }
+    .form-group {
+    margin-bottom: 20px; /* Spacing between rows */
+}
+
+/* Modern Table Row Highlight */
+tr:hover {
+    background-color: #f1f5f9; /* A very soft blue-gray */
+    cursor: pointer;           /* Changes the mouse to a hand icon */
+}
+button:active {
+    background-color: #004085; /* Darker than the hover color */
+    transform: translateY(1px); /* Moves the button down 1px to look 'pressed' */
+}
+input:focus {
+    border-color: #0056b3;
+    outline: none; /* Removes the default browser ring */
+    box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.25); /* Adds a soft glow */
+}
+input:disabled {
+    background-color: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed; /* Shows a 'circle with a slash' icon */
+}
+</style>
+  <script>
+        async function generateReport(event) {
+            console.log("GENERATING REPORT - TEST");
+            event.preventDefault();
+
+            const form = event.target;
+
+            try {
+                const response = await fetch('/reports', {
+                    method: 'POST',
+                    body: new FormData(form)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const reportHtml = await response.text();
+                document.getElementById('report-container').innerHTML = reportHtml;
+                document.title = document.getElementById('report_type').value;
+                console.log("Report generated for type: " + document.title);
+
+            } catch (error) {
+                console.error("Error generating report:", error);
+                document.getElementById('report-container').innerHTML = '<p class="text-danger">Error generating report. Please try again.</p>';
+            }
+        }
+
+        function showReportParametersx() {
+            const reportType = document.getElementById('report_type').value;
+            const dateParams = document.getElementById('date-params');
+             console.log("!!!!!!!!!!!showreportparms:"+reportType)
+           // if (reportType === 'callsbyserver' || reportType === 'allcalls') {
+           //     dateParams.classList.remove('d-none');
+           // } else {
+           //     dateParams.classList.add('d-none');
+            //}
+        }
+
+       document.addEventListener('DOMContentLoaded', () => {
+       //    document.getElementById('report_type').addEventListener('change', showReportParameters);
+       });
+    </script>
+  
+</head>
+
+<body>
+  <div class="form-container">
+       <h1>form container</h1>
+    <form class="form" onsubmit="generateReport(event)">
+      <h1>form itself</h1>
+        <label for="name">Name</label>
+        <input id="name" name="name" type="text">
+        <label for="current-password">Password</label>
+        <input type="password" id="current-password" name="current-password">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email">
+        <label for="report_type">Select a report</label>
+        <select id="report_type" name="report_type">
+            <option value="one">report One</option>
+            <option value="two">Option Two</option>
+            <option value="callsbyserver">callsbyserver</option>
+            <option value="allcalls">allcalls</option>
+        </select>
+
+        <div id="date-params" class="form" name="date-params">
+            <label for="start_date">Start Date</label>
+            <input id="start_date" name="start_date" type="date">
+            <label for="end_date">End Date</label>
+            <input id="end_date" name="end_date" type="date">
+        </div>
+
+        <button type="submit">Submit</button>
+    </form>
+</div>
+
+<div id="report-container" class="report-container"></div>
+
+</body>
+</html>
+

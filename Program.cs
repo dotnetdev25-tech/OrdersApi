@@ -36,14 +36,14 @@ builder.Services.AddScoped<OrdersRepository>();
 
 
 // Configure CORS for Blazor frontend
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("BlazorPolicy", policy =>
-        policy.WithOrigins("https://localhost:7000")
+// 1. Define the policy
+builder.Services.AddCors(options => {
+    options.AddPolicy("LocalDevPolicy", policy => {
+        policy.WithOrigins("http://localhost:5000")
               .AllowAnyMethod()
-              .AllowAnyHeader());
+              .AllowAnyHeader();
+    });
 });
-
 // Configure QuestPDF license
 QuestPDF.Settings.License = LicenseType.Community;
 
@@ -64,8 +64,7 @@ builder.Host.UseSerilog();
 var app = builder.Build();
 
 // Configure middleware
-app.UseCors("BlazorPolicy");
-
+app.UseCors("LocalDevPolicy");
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

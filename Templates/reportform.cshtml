@@ -1,0 +1,127 @@
+@model dynamic
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>@Model.PageTitle</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script>
+        async function generateReport(event) {
+            console.log("Generating report...");
+            event.preventDefault();
+
+            const form = event.target;
+
+            try {
+                const response = await fetch(form.action, {
+                    method: form.method,
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const reportHtml = await response.text();
+                document.getElementById('report-container').innerHTML = reportHtml;
+                document.title = document.getElementById('report_type').value;
+                console.log("Report generated for type: " + document.title);
+
+            } catch (error) {
+                console.error("Error generating report:", error);
+                document.getElementById('report-container').innerHTML = '<p class="text-danger">Error generating report. Please try again.</p>';
+            }
+        }
+
+        function showReportParameters() {
+            const reportType = document.getElementById('report_type').value;
+            const dateParams = document.getElementById('date-params');
+
+            if (reportType === 'callsbyserver' || reportType === 'allcalls') {
+                dateParams.classList.remove('d-none');
+            } else {
+                dateParams.style.display = 'none';
+                dateParams.classList.add('d-none');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('report_type').addEventListener('change', showReportParameters);
+        });
+    </script>
+     <style>
+      body {
+        margin: 0;
+        font-family: sans-serif;
+      }
+
+      .container {
+        width: 900px;
+        margin: 0 auto;
+        border: 1px solid #460202;
+      }
+
+      .header,
+      .footer {
+        background: #333;
+        color: white;
+        padding: 20px;
+      }
+
+      .content-area {
+        padding: 10px;
+      }
+
+      .main {
+        display: inline-block;
+        width: 100%;
+        vertical-align: top;
+        background: #f0f0f0;
+        padding: 10px;
+      }
+
+      .sidebar {
+        display: inline-block;
+        width: 30%;
+        vertical-align: top;
+        background: #e0e0ff;
+        padding: 10px;
+      }
+    </style>
+
+</head>
+<body class="container">
+    <p>form</p>
+    <div class="container">
+   
+    <form action="/reports" method="post" onsubmit="generateReport(event)"class="content-area" >
+        <label for="report_type" >Report Type:</label>
+            <select id="report_type" name="report_type"  onchange="showReportParameters()">
+                <option value="summaryreport">Summary Report (sanity check)</option>
+                <option value="callsbyserver">Calls by Server</option>
+                <option value="callsbydnis">Calls by DNIS</option>
+                <option value="callsbyhour">Calls by Hour</option>
+                <option value="callsbydate">Calls by Date</option>
+                <option value="allcalls">All Calls</option>
+                <option value="trendingreport">Trending Report</option>
+                <option value="serveragg">Server Agg Report</option>
+                <option value="concurrentusage">Concurrent Usage Report</option>
+                <option value="kpis">KPI Report</option>
+                <br>
+            </select>
+                <label for="date_range" >Date Range:</label>
+                <select id="date_range" name="date_range" >
+                    <option value="today">Today</option>
+                    <option value="alltime">All Time</option>
+                    <option value="yesterday">Yesterday</option>
+                    <option value="this_month">This Month</option>
+                    <option value="last_7_days">Last 7 Days</option>
+                </select>
+                <br>
+                    <button type="submit" class="btn btn-primary">Generate Report</button>
+               </div>
+    </form>
+       <p>report output</p>
+    <div id="report-container" class="container" style="max-height: 600px; overflow-y: auto; width: 100%; max-width: 640px;">
+    </div>
+</body>
+</html>
