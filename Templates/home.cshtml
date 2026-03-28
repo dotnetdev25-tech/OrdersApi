@@ -26,14 +26,12 @@
         border: 1px solid #ddd;
         border-radius: 6px;
     }
-      .report-container {
-        background: #f3f4f6;
-        padding: 20px;
-        max-width: 400px;
-        margin: 0 auto;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-    }
+     #report-container {
+    height: 500px;         /* Or max-height: 80vh; for responsiveness */
+    overflow-y: auto;      /* Shows scrollbar only when content exceeds height */
+    border: 1px solid #ccc; /* Optional: helps define the area visually */
+    padding: 15px;
+}
 .form {
         padding: 20px;
         max-width: 400px;
@@ -88,6 +86,18 @@ input:disabled {
     color: #6c757d;
     cursor: not-allowed; /* Shows a 'circle with a slash' icon */
 }
+/* A simple 3-column layout that collapses on small screens */
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+.card {
+  border: 1px solid #333;
+  padding: 15px;
+  border-radius: 4px;
+}
 </style>
   <script>
         async function generateReport(event) {
@@ -97,16 +107,17 @@ input:disabled {
             console.log("GENERATING REPORT - TEST");
             const reportName = document.getElementById('report_type').value;
             console.log("GENERATING REPORT - test2:");
+            console.log(event);
             event.preventDefault();
 
             const form = event.target;
 
             try {
-                const response = await fetch('/reports', {
-                    method: 'POST',
-                    body: new FormData(form)
+                const response = await fetch('/Customer?page=1&pageSize=10&format=html', {
+                    method: 'get'
+                   // body: new FormData(form)
                 });
-
+                //http://localhost:5000/Customer?page=1&pageSize=10&format=html
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -133,6 +144,8 @@ input:disabled {
            //     dateParams.classList.add('d-none');
             //}
         }
+            //document.getElementById("reportForm")
+            //.addEventListener("submit", generateReport);
 
        document.addEventListener('DOMContentLoaded', () => {
            document.getElementById('report_type').addEventListener('change', showReportParameters);
@@ -144,7 +157,7 @@ input:disabled {
 <body>
   <div class="form-container">
        <h1>form container</h1>
-    <form class="form" onsubmit="generateReport(event)">
+    <form class="form" onsubmit="generateReport(event)" id="reportForm">
       <h1>form itself</h1>
         <label for="name">Name</label>
         <input id="name" name="name" type="text" required>
