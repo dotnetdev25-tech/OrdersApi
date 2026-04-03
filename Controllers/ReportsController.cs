@@ -29,7 +29,7 @@ namespace OrdersApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult Get([FromForm] string report_type, [FromForm] DateTime? start_date, [FromForm] DateTime? end_date)
+        public async Task<IActionResult> GenerateReport([FromForm] string report_type, [FromForm] DateTime? start_date, [FromForm] DateTime? end_date)
         {
             _logger.LogCritical("\n !!!!!!!!!!!!!!!!Generating report for type: {ReportType}, start: {StartDate}, end: {EndDate}", report_type, start_date, end_date);
 
@@ -47,8 +47,15 @@ namespace OrdersApi.Controllers
     <p>Report content goes here...</p>
 </body>
 </html>";
+var reportsstub = new Reportsstub
+        {
+         customerName = report_type,
+         customerEmail = "testemail"
+        };
+        _logger.LogCritical("!!!!!!!!!REPORTSSTUB NAME:" + reportsstub.customerName);
+        var htmlstub = await _razor.CompileRenderAsync("reportsstub.cshtml", reportsstub);
 
-            return Content(html, "text/html");
+            return Content(htmlstub, "text/html");
         }
 
             [HttpGet("{id}/html")]

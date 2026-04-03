@@ -113,9 +113,9 @@ input:disabled {
             const form = event.target;
 
             try {
-                const response = await fetch('/Customer?page=1&pageSize=10&format=html', {
-                    method: 'get'
-                   // body: new FormData(form)
+                const response = await fetch('/reports', {
+                    method: 'post',
+                    body: new FormData(form)
                 });
                 //http://localhost:5000/Customer?page=1&pageSize=10&format=html
                 if (!response.ok) {
@@ -156,7 +156,7 @@ input:disabled {
 
 <body>
   <div class="form-container">
-       <h1>form container</h1>
+       <p>form container</p>
     <form class="form" onsubmit="generateReport(event)" id="reportForm">
       <h1>form itself</h1>
         <label for="name">Name</label>
@@ -180,7 +180,7 @@ input:disabled {
             <input id="end_date" name="end_date" type="date">
         </div>
 
-        <button type="submit">Submit</button>
+        <button type="submit">create report</button>
     </form>
 </div>
 

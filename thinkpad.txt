@@ -1,0 +1,5 @@
+----------------
+razorize
+------------
+need to change anywhere we have inline html into razor pages. is way cleaner.
+ a good starting place would be the reports controller base post since this just takes in a post form the home controller is a great model to start with for the razorpages code. 

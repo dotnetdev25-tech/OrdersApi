@@ -1,11 +1,11 @@
 
 @using OrdersApi.Dtos 
- @model CustomerDto
+ @model Reportsstub
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Customer Lookup</title>
+    <title>reports stub</title>
 
     <!-- Bootstrap 5 -->
     <link 
@@ -23,16 +23,16 @@
 
             <form onsubmit="alert('Form submitted!')"  class="p-4 bg-white shadow-sm rounded">
 
-                <h4 class="mb-4 text-center">Customer Lookupxxx</h4>
+                <h4 class="mb-4 text-center">@Model.report_type</h4>
 
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Name</label>
-                    <input type="text" class="form-control" name="@Model.customerName" placeholder="Enter name">
+                    <input type="text" class="form-control" value="@Model.customerName" placeholder="Enter name I GOT NUTHINx">
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Email</label>
-                    <input type="email" class="form-control" name="@Model.customerEmail" placeholder="Enter email">
+                    <input type="email" class="form-control" value="@Model.customerEmail" placeholder="Enter email">
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100">
