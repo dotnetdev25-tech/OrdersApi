@@ -29,33 +29,27 @@ namespace OrdersApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GenerateReport([FromForm] string report_type, [FromForm] DateTime? start_date, [FromForm] DateTime? end_date)
+        public async Task<IActionResult> GenerateReport([FromForm] string report_type,[FromForm] string name,[FromForm] string email, [FromForm] string? start_date, [FromForm] string? end_date)
         {
+            if (string.IsNullOrEmpty(start_date) || string.IsNullOrEmpty(end_date))
+            {
+                return BadRequest("Start date and end date are required.");
+            }
             _logger.LogCritical("\n !!!!!!!!!!!!!!!!Generating report for type: {ReportType}, start: {StartDate}, end: {EndDate}", report_type, start_date, end_date);
-
-            var html = $@"
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{report_type} Report</title>
-</head>
-<body>
-    <h1>Report: {report_type}</h1>
-    <p>Generated on {DateTime.Now}</p>
-    {(start_date.HasValue ? $"<p>Start Date: {start_date.Value:yyyy-MM-dd}</p>" : "")}
-    {(end_date.HasValue ? $"<p>End Date: {end_date.Value:yyyy-MM-dd}</p>" : "")}
-    <p>Report content goes here...</p>
-</body>
-</html>";
-var reportsstub = new Reportsstub
+            var rtn= await About(report_type,start_date,end_date);
+             return Content(rtn, "text/html");
+        }
+        private async Task<string> About(string report_type,string start_date,string end_date)
         {
-         customerName = report_type,
-         customerEmail = "testemail"
-        };
-        _logger.LogCritical("!!!!!!!!!REPORTSSTUB NAME:" + reportsstub.customerName);
-        var htmlstub = await _razor.CompileRenderAsync("reportsstub.cshtml", reportsstub);
-
-            return Content(htmlstub, "text/html");
+            _logger.LogCritical("HERE IN ABOUT");
+            _logger.LogInformation("About method called: type {ReportType}", report_type);
+            return report_type switch
+            {
+                "about" => await GenerateAboutReport(start_date, end_date),
+                "order" => await GenerateOrderReport(start_date, end_date, 0),
+                "summary" => await GenerateSummaryReport(start_date, end_date),
+                _ => "<html><body>Unknown report type</body></html>"
+            };
         }
 
             [HttpGet("{id}/html")]
@@ -758,6 +752,94 @@ var reportsstub = new Reportsstub
 </html>");
 
             return sb.ToString();
+        }
+
+        private async Task<string> GenerateAboutReport(string start_date, string end_date)
+        {
+int id = 1;
+            
+        const string sql = @"
+    select
+    o.id as order_id,
+    o.order_date
+    from orders o
+    where o.id = $1
+  order by o.id;
+   ";
+          await using var cmd = _db.CreateCommand(sql);
+        cmd.Parameters.AddWithValue(id);
+        cmd.LogParameters(_logger);
+_logger.LogInformation("@@@@@stubfor orderssql"+sql);
+ await using var reader = await cmd.ExecuteReaderAsync();
+
+
+            // Stub: Generate about report HTML
+            var countSql = "select count(*)from orders";
+            using var countCmd = _db.CreateCommand(countSql);
+            countCmd.LogParameters(_logger);
+    var totalCountObj = countCmd.ExecuteScalar();
+            var version = totalCountObj?.ToString() ?? "Unknown";
+            _logger.LogInformation("Called order countdatabase version: {Version}", version);
+            var reportsstub = new Reportsstub
+            {
+                report_type = "about",
+                customerName = version,
+                customerEmail = "email",
+                start_date = start_date,
+                end_date = end_date
+            };
+            _logger.LogCritical("REPORTSSTUB NAME: {Name}", reportsstub.customerName);
+            var htmlstub = await _razor.CompileRenderAsync("about.cshtml", reportsstub);
+            return htmlstub;
+        }
+        private async Task<string> GenerateOrderReport(string start_date, string end_date, int order_id)
+        {
+            _logger.LogCritical("INGENERATEORDERREPORT");
+
+            order_id=1;
+            if (order_id == 0)
+            {
+                return "<html><body>Invalid order ID</body></html>";
+            }
+            const string sql = @"
+    select
+    o.id as order_id,
+    o.order_date
+    from orders o
+    where o.id = $1
+  order by o.id;
+   ";
+            await using var cmd = _db.CreateCommand(sql);
+            cmd.Parameters.AddWithValue(order_id);
+            cmd.LogParameters(_logger);
+            _logger.LogCritical("########GET ORDERS SQL: {Sql}", cmd.CommandText);
+
+            await using var reader = await cmd.ExecuteReaderAsync();
+            OrderDto? order = null;
+            if (await reader.ReadAsync())
+            {
+                order = new OrderDto
+                {
+                    OrderId = reader.GetInt32(0),
+                    OrderDate = reader.GetDateTime(1)
+                };
+                _logger.LogCritical("!!!!!!!!    ###sqlorder: {OrderId}, {OrderDate}", order.OrderId, order.OrderDate);
+            }
+            if (order != null)
+            {
+                var html = await _razor.CompileRenderAsync("order.cshtml", order);
+                return html;
+            }
+            else
+            {
+                return "<html><body>Order not found</body></html>";
+            }
+        }
+
+        private async Task<string> GenerateSummaryReport(string start_date, string end_date)
+        {
+            // Stub: Generate summary report HTML
+            return "<html><body>Summary Report</body></html>";
         }
     }
 }

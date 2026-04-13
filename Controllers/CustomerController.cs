@@ -597,8 +597,8 @@ namespace OrdersApi.Controllers
                                         <td>{customer.customerEmail}</td>
                                         <td><span class='badge bg-secondary'>{customer.customerType}</span></td>
                                         <td>
-                                            <a href='/order/{customer.customerid}?format=html' class='btn btn-sm btn-outline-primary me-1'>View</a>
-                                            <a href='/order/{customer.customerid}/edit' class='btn btn-sm btn-outline-warning me-1'>Edit</a>
+                                            <a href='/customer/{customer.customerid}?format=html' class='btn btn-sm btn-outline-primary me-1'>View</a>
+                                            <a href='/customer/{customer.customerid}/edit' class='btn btn-sm btn-outline-warning me-1'>Edit</a>
                                         </td>
                                     </tr>");
             }

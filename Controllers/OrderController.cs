@@ -419,28 +419,20 @@ var connectionString = _configuration.GetConnectionString("Default");
         {
             const string sql = @"
     select
-    c.id as customer_id,
-    c.name as customer_name,
-    c.email as customer_email,
+  
     o.id as order_id,
     o.order_date,
-    i.id as item_id,
-    i.product_name,
-    i.quantity,
-    i.unit_price
     from orders o
-   left join customers c on o.customer_id = c.id
-   left join order_items i on o.id = i.order_id
     where o.id = $1
   order by o.id, i.id;
    ";
-   // The SQL string uses $1 as the placeholder
+// The SQL string uses $1 as the placeholder
 //var sql = "select * from users where user_id = $1";
 // You must provide the placeholder name/index and the value
 //cmd.Parameters.AddWithValue("$1", id);
-            await using var cmd = _db.CreateCommand(sql);
-            cmd.Parameters.AddWithValue(id);
-            cmd.LogParameters(_logger);
+        await using var cmd = _db.CreateCommand(sql);
+        cmd.Parameters.AddWithValue(id);
+        cmd.LogParameters(_logger);
 
             _logger.LogInformation("GET1x SQL: {Sql}", cmd.CommandText);
 

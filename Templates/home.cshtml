@@ -156,10 +156,8 @@ input:disabled {
 
 <body>
   <div class="form-container">
-       <p>form container</p>
-    <form class="form" onsubmit="generateReport(event)" id="reportForm">
-      <h1>form itself</h1>
-        <label for="name">Name</label>
+         <form class="form" onsubmit="generateReport(event)" id="reportForm">
+        <label for="name">Name*</label>
         <input id="name" name="name" type="text" required>
         <label for="current-password">Password</label>
         <input type="password" id="current-password" name="current-password">
@@ -167,9 +165,10 @@ input:disabled {
         <input id="email" name="email" type="email">
         <label for="report_type">Select a report</label>
         <select id="report_type" name="report_type">
-            <option value="one">report One</option>
+            <option value="about">about</option>
+            <option value="order">order</option>
             <option value="two">Option Two</option>
-            <option value="callsbyserver">callsbyserver</option>
+            <option value="callsbyserver">calls by server</option>
             <option value="allcalls">allcalls</option>
         </select>
 
@@ -180,7 +179,7 @@ input:disabled {
             <input id="end_date" name="end_date" type="date">
         </div>
 
-        <button type="submit">create report</button>
+        <button type="submit">GENERATE report</button>
     </form>
 </div>
 

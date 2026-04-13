@@ -6,5 +6,8 @@ public string customerName { get; init; } = null!;
 public string report_type {get;init;} = null!;
     public string customerEmail { get; init; } = null!;
     public string customerType { get; init; } = null!;
+    public string start_date {get;init;} = null!;
+    public string end_date {get;init;} = null!;
+    
     
 }

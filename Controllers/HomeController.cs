@@ -23,12 +23,12 @@ public class HomeController : ControllerBase
             _db = db;
         }
     [HttpGet]
-    public IActionResult Index(){
-        _logger.LogInformation("\n!!!!!!home!!!!!!!");
-  
-var model = new { PageTitle = "Reports" };
-var htmlrazor = _razor.CompileRenderAsync("home.cshtml", model).Result;
-return Content(htmlrazor, "text/html");
-   // }
-}
+    public async Task<IActionResult> Index()
+    {
+        _logger.LogInformation("Home page requested sync");
+
+        var model = new { PageTitle = "Report SELECTION" };
+        var htmlrazor = await _razor.CompileRenderAsync("home.cshtml", model);
+        return Content(htmlrazor, "text/html");
+    }
 }
