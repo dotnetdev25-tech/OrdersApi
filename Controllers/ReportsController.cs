@@ -46,7 +46,7 @@ namespace OrdersApi.Controllers
             return report_type switch
             {
                 "about" => await GenerateAboutReport(start_date, end_date),
-                "order" => await GenerateOrderReport(start_date, end_date, 0),
+                "order" => await GenerateOrderReport(start_date, end_date),
                 "summary" => await GenerateSummaryReport(start_date, end_date),
                 _ => "<html><body>Unknown report type</body></html>"
             };
@@ -758,24 +758,10 @@ namespace OrdersApi.Controllers
         {
 int id = 1;
             
-        const string sql = @"
-    select
-    o.id as order_id,
-    o.order_date
-    from orders o
-    where o.id = $1
-  order by o.id;
-   ";
-          await using var cmd = _db.CreateCommand(sql);
-        cmd.Parameters.AddWithValue(id);
-        cmd.LogParameters(_logger);
-_logger.LogInformation("@@@@@stubfor orderssql"+sql);
- await using var reader = await cmd.ExecuteReaderAsync();
-
-
-            // Stub: Generate about report HTML
+     
             var countSql = "select count(*)from orders";
             using var countCmd = _db.CreateCommand(countSql);
+
             countCmd.LogParameters(_logger);
     var totalCountObj = countCmd.ExecuteScalar();
             var version = totalCountObj?.ToString() ?? "Unknown";
@@ -788,58 +774,56 @@ _logger.LogInformation("@@@@@stubfor orderssql"+sql);
                 start_date = start_date,
                 end_date = end_date
             };
-            _logger.LogCritical("REPORTSSTUB NAME: {Name}", reportsstub.customerName);
+            
             var htmlstub = await _razor.CompileRenderAsync("about.cshtml", reportsstub);
             return htmlstub;
         }
-        private async Task<string> GenerateOrderReport(string start_date, string end_date, int order_id)
+private async Task<string> GenerateOrderReport(string start_date, string end_date)
         {
-            _logger.LogCritical("INGENERATEORDERREPORT");
-
-            order_id=1;
-            if (order_id == 0)
+            if (!DateTime.TryParse(start_date, out var start) || !DateTime.TryParse(end_date, out var end))
             {
-                return "<html><body>Invalid order ID</body></html>";
+                return "<html><body>Invalid date format</body></html>";
             }
+
             const string sql = @"
     select
     o.id as order_id,
     o.order_date
     from orders o
-    where o.id = $1
-  order by o.id;
+    where o.order_date >= $1 and o.order_date <= $2
+    order by o.id;
    ";
+
             await using var cmd = _db.CreateCommand(sql);
-            cmd.Parameters.AddWithValue(order_id);
+            cmd.Parameters.AddWithValue(start);
+            cmd.Parameters.AddWithValue(end);
             cmd.LogParameters(_logger);
             _logger.LogCritical("########GET ORDERS SQL: {Sql}", cmd.CommandText);
 
             await using var reader = await cmd.ExecuteReaderAsync();
-            OrderDto? order = null;
-            if (await reader.ReadAsync())
+            var orders = new List<OrderDto>();
+            while (await reader.ReadAsync())
             {
-                order = new OrderDto
+                orders.Add(new OrderDto
                 {
                     OrderId = reader.GetInt32(0),
                     OrderDate = reader.GetDateTime(1)
-                };
-                _logger.LogCritical("!!!!!!!!    ###sqlorder: {OrderId}, {OrderDate}", order.OrderId, order.OrderDate);
+                });
+                _logger.LogCritical("!!!!!!!!    ###sqlorder: {OrderId}, {OrderDate}", orders.Last().OrderId, orders.Last().OrderDate);
             }
-            if (order != null)
-            {
-                var html = await _razor.CompileRenderAsync("order.cshtml", order);
-                return html;
-            }
-            else
-            {
-                return "<html><body>Order not found</body></html>";
-            }
+            var html = await _razor.CompileRenderAsync("order.cshtml", orders);
+            return html;
         }
 
         private async Task<string> GenerateSummaryReport(string start_date, string end_date)
         {
             // Stub: Generate summary report HTML
-            return "<html><body>Summary Report</body></html>";
+                CustomerDto customer=new CustomerDto{
+                    customerName="hardcoded",
+                    customerEmail="email@exhardcoded"
+                };
+              var html = await _razor.CompileRenderAsync("CustomerSummary.cshtml", customer);
+            return html;
         }
     }
 }

@@ -119,17 +119,18 @@ input:disabled {
                 });
                 //http://localhost:5000/Customer?page=1&pageSize=10&format=html
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`HTTP error!!!!!!! status: ${response.status}`);
                 }
                 
 
                 const reportHtml = await response.text();
                 document.getElementById('report-container').innerHTML = reportHtml;
+                console.log(reportHtml);
                 document.title = document.getElementById('report_type').value;
                 console.log("Report generated for typexxxx: " + document.title);
 
             } catch (error) {
-                console.error("Error generating report:", error);
+                console.error("Error generating report:", error.message || error);
                 document.getElementById('report-container').innerHTML = '<p class="text-danger">Error generating report. Please try again.</p>';
             }
         }
@@ -168,15 +169,16 @@ input:disabled {
             <option value="about">about</option>
             <option value="order">order</option>
             <option value="two">Option Two</option>
+            <option value="summary">summary report</option>
             <option value="callsbyserver">calls by server</option>
             <option value="allcalls">allcalls</option>
         </select>
 
         <div id="date-params" class="form" name="date-params">
-            <label for="start_date">Start Date</label>
-            <input id="start_date" name="start_date" type="date">
-            <label for="end_date">End Date</label>
-            <input id="end_date" name="end_date" type="date">
+            <label for="start_date">Start Date*</label>
+            <input id="start_date" name="start_date" type="date"required>
+            <label for="end_date">End Date*</label>
+            <input id="end_date" name="end_date" type="date"required>
         </div>
 
         <button type="submit">GENERATE report</button>
