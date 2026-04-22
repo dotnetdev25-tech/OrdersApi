@@ -21,12 +21,64 @@ Directory.CreateDirectory("logs");
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+/////////
+//dotnet add package Serilog.AspNetCore
+//dotnet add package Serilog.Sinks.Console
+//dotnet add package Serilog.Settings.Configuration
+builder.Host.UseSerilog((context, services, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
 // Configure database connection pooling
 var connectionString = builder.Configuration.GetConnectionString("Default");
 builder.Services.AddSingleton<NpgsqlDataSource>(
     _ => new NpgsqlDataSourceBuilder(connectionString).Build());
 
+builder.Services.AddProblemDetails();
+
+// In the pipeline
+//app.UseExceptionHandler();    // catches unhandled exceptions
+//app.UseStatusCodePages();      // turns bare 404s/500s into ProblemDetails JSON
+//app.UseExceptionHandler(errorApp =>
+//{
+//    errorApp.Run(async context =>
+//    {
+ //       var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+        
+ //       var problemDetails = exception switch
+  //      {
+//            NotFoundException => new ProblemDetails
+//            {
+ //               Status = 404,
+ //               Title = "Resource Not Found",
+ //               Detail = exception.Message
+ //           },
+ //           ValidationException ve => new ProblemDetails
+  //          {
+  //              Status = 400,
+  //              Title = "Validation Failed",
+  //              Extensions = { ["errors"] = ve.Errors }
+  //          },
+  //          _ => new ProblemDetails
+   //         {
+   //             Status = 500,
+   //             Title = "Internal Server Error"
+                // Detail intentionally omitted — no stack traces to clients
+   //         }
+   //     };
+
+    //    context.Response.StatusCode = problemDetails.Status ?? 500;
+    //    await context.Response.WriteAsJsonAsync(problemDetails);
+   // });
+//});
+
+    ////// ANOTHER WAY TO CONFIGURE SERILOG
+
+//Log.Logger = new LoggerConfiguration()
+ //   .Enrich.WithUtcTimestamp()
+//    .WriteTo.Console(outputTemplate:
+ //       "{UtcTimestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level}] {Message}{NewLine}{Exception}")
+ //   .CreateLogger();
+//
+/////
 #pragma warning disable CS8604 // Possible null reference argument.
 builder.Services.AddSingleton(new PgDb(connectionString));
 #pragma warning restore CS8604 // Possible null reference argument.
@@ -47,24 +99,11 @@ builder.Services.AddCors(options => {
 // Configure QuestPDF license
 QuestPDF.Settings.License = LicenseType.Community;
 
-// Configure Serilog *before* building the app
-// Configure Serilog before building the app
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information()
-    .WriteTo.File(
-        path: "logs/log-.txt",          // log files in ./logs
-        rollingInterval: RollingInterval.Day,
-        retainedFileCountLimit: 7,      // keep last 7 days
-        shared: true                    // allow shared access, no buffered writes
-    )
-    .CreateLogger();
-
-builder.Host.UseSerilog();
-
 var app = builder.Build();
 
 // Configure middleware
 app.UseCors("LocalDevPolicy");
+app.UseSerilogRequestLogging(); // replaces default noisy request logs
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -76,6 +115,6 @@ var logger = LoggerFactory.Create(cfg =>
 {
     cfg.AddConsole();
 }).CreateLogger("startup");
-logger.LogCritical("{Timestamp} serverstarted", DateTime.Now);
+logger.LogCritical("{Timestamp} serverstarted!!!!!!!!", DateTime.Now);
 
 app.Run();

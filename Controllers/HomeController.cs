@@ -25,6 +25,10 @@ public class HomeController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Index()
     {
+      var request = HttpContext.Request;
+        var url = $"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}";
+
+        _logger.LogInformation("Controller hit: {Url}", url);
         _logger.LogInformation("Home page requested sync");
 
         var model = new { PageTitle = "Report SELECTION" };

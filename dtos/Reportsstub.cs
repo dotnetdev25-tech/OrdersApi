@@ -2,12 +2,10 @@ namespace OrdersApi.Dtos;
 public record Reportsstub
 {
     public int customerid { get; init; }
-public string customerName { get; init; } = null!;
-public string report_type {get;init;} = null!;
+    public string customerName { get; init; } = null!;
+    public string report_type { get; init; } = null!;
     public string customerEmail { get; init; } = null!;
     public string customerType { get; init; } = null!;
-    public string start_date {get;init;} = null!;
-    public string end_date {get;init;} = null!;
-    
-    
+    public DateOnly start_date { get; init; }
+    public DateOnly end_date { get; init; }
 }

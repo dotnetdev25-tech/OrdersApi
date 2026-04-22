@@ -7,6 +7,9 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using System.Text;
 using RazorLight;
+using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
+
 
 namespace OrdersApi.Controllers
 {
@@ -29,23 +32,68 @@ namespace OrdersApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GenerateReport([FromForm] string report_type,[FromForm] string name,[FromForm] string email, [FromForm] string? start_date, [FromForm] string? end_date)
+        public async Task<IActionResult> GenerateReport([FromForm][Required]  string report_type, [FromForm] string name, [FromForm] string email, [FromForm] DateOnly? start_date, [FromForm] DateOnly? end_date)
         {
-            if (string.IsNullOrEmpty(start_date) || string.IsNullOrEmpty(end_date))
+       var argname =name;
+       var argemail=email;
+//_logger.LogInformation("Request: {Method} {Url}", method, url);
+
+               var request = HttpContext.Request;
+                    var method = request.Method;
+var url = $"{method} {request.Scheme}://{request.Host}{request.Path}{request.QueryString}";
+
+        var urlx = $"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}";
+
+        _logger.LogInformation("Controller hit with VERB: {Url}", url);
+     
+            var now = DateTime.Now;
+            // Always start by 'zeroing out' to today at midnight
+            var todayStart = now.Date;
+            //// start python code need to update
+            //if label == "today":
+        //start = today_start
+        //end = start + timedelta(days=1)
+    //elif label == "alltime":
+     //   start = datetime(1970, 1, 1)
+      //  end = today_start + timedelta(days=1)
+   // elif label == "yesterday":
+    //    start = today_start - timedelta(days=1)
+    //    end = today_start
+     //   
+    //elif label == "last_7_days":
+       // # Usually implies the last 7 full days + today
+      //  start = today_start - timedelta(days=7)
+      //  end = today_start + timedelta(days=1)
+        
+    //elif label == "this_month":
+     //   start = today_start.replace(day=1)
+     //   # Next month logic
+     //   if start.month == 12:
+     //       end = start.replace(year=start.year + 1, month=1)
+     //   else:
+     //       end = start.replace(month=start.month + 1)
+     //   
+            /////////////////////////////////////
+
+            if (!start_date.HasValue || !end_date.HasValue)
             {
                 return BadRequest("Start date and end date are required.");
             }
-            _logger.LogCritical("\n !!!!!!!!!!!!!!!!Generating report for type: {ReportType}, start: {StartDate}, end: {EndDate}", report_type, start_date, end_date);
-            var rtn= await About(report_type,start_date,end_date);
-             return Content(rtn, "text/html");
+
+            var start = start_date.Value;
+            var end = end_date.Value;
+
+            _logger.LogCritical("\n !!!!!!!!!!!!!!!!Generating report for type: {ReportType}, start: {StartDate}, end: {EndDate}", report_type, start, end);
+            var rtn = await About(report_type, start, end,argname,argemail);
+            return Content(rtn, "text/html");
         }
-        private async Task<string> About(string report_type,string start_date,string end_date)
+        private async Task<string> About(string report_type, DateOnly start_date, DateOnly end_date,string name,string email)
         {
             _logger.LogCritical("HERE IN ABOUT");
             _logger.LogInformation("About method called: type {ReportType}", report_type);
             return report_type switch
             {
-                "about" => await GenerateAboutReport(start_date, end_date),
+                "about" => await GenerateAboutReport(start_date, end_date,name,email),
                 "order" => await GenerateOrderReport(start_date, end_date),
                 "summary" => await GenerateSummaryReport(start_date, end_date),
                 _ => "<html><body>Unknown report type</body></html>"
@@ -754,23 +802,20 @@ namespace OrdersApi.Controllers
             return sb.ToString();
         }
 
-        private async Task<string> GenerateAboutReport(string start_date, string end_date)
+        private async Task<string> GenerateAboutReport(DateOnly start_date, DateOnly end_date,string name,string email)
         {
-int id = 1;
-            
-     
             var countSql = "select count(*)from orders";
             using var countCmd = _db.CreateCommand(countSql);
 
             countCmd.LogParameters(_logger);
-    var totalCountObj = countCmd.ExecuteScalar();
+            var totalCountObj = countCmd.ExecuteScalar();
             var version = totalCountObj?.ToString() ?? "Unknown";
-            _logger.LogInformation("Called order countdatabase version: {Version}", version);
+            _logger.LogInformation("Called aboutorders count: {Version}", version);
             var reportsstub = new Reportsstub
             {
                 report_type = "about",
-                customerName = version,
-                customerEmail = "email",
+                customerName = name,
+                customerEmail = email,
                 start_date = start_date,
                 end_date = end_date
             };
@@ -778,12 +823,10 @@ int id = 1;
             var htmlstub = await _razor.CompileRenderAsync("about.cshtml", reportsstub);
             return htmlstub;
         }
-private async Task<string> GenerateOrderReport(string start_date, string end_date)
+        private async Task<string> GenerateOrderReport(DateOnly start_date, DateOnly end_date)
         {
-            if (!DateTime.TryParse(start_date, out var start) || !DateTime.TryParse(end_date, out var end))
-            {
-                return "<html><body>Invalid date format</body></html>";
-            }
+            var start = start_date.ToDateTime(TimeOnly.MinValue);
+            var end = end_date.ToDateTime(TimeOnly.MaxValue);
 
             const string sql = @"
     select
@@ -815,14 +858,15 @@ private async Task<string> GenerateOrderReport(string start_date, string end_dat
             return html;
         }
 
-        private async Task<string> GenerateSummaryReport(string start_date, string end_date)
+        private async Task<string> GenerateSummaryReport(DateOnly start_date, DateOnly end_date)
         {
             // Stub: Generate summary report HTML
-                CustomerDto customer=new CustomerDto{
-                    customerName="hardcoded",
-                    customerEmail="email@exhardcoded"
-                };
-              var html = await _razor.CompileRenderAsync("CustomerSummary.cshtml", customer);
+            CustomerDto customer = new CustomerDto
+            {
+                customerName = "hardcoded",
+                customerEmail = "email@exhardcoded"
+            };
+            var html = await _razor.CompileRenderAsync("CustomerSummary.cshtml", customer);
             return html;
         }
     }

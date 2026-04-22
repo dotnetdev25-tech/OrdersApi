@@ -132,6 +132,11 @@ from daily_sales order by id;    ";
         [ProducesResponseType(typeof(string), 200)]
         public async Task<IActionResult> Get([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string? format = null)
         {
+             var request = HttpContext.Request;
+        var url = $"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}";
+
+        _logger.LogInformation("Controller hit: {Url}", url);
+     
             _logger.LogInformation("gGET orders");
             // Get total count
             var countSql = "SELECT COUNT(*) FROM orders";
